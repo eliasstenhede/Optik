@@ -10,7 +10,7 @@ L=100e-3; % propagationssträcka (dvs avstånd mellan Plan 1 och 2)
 
 lambda_noll=633e-9; % vakuumvåglängd för rött ljus från en HeNe-laser
 n_medium=1; % brytningsindex för medium mellan Plan 1 och 2
-k=...; % k-vektorns längd *** Ej klar
+k=2*pi*n_medium/lambda_noll; 
 
 xvekt=-N/2*a:a:(N/2-1)*a; % vektor med sampelpositioner i x-led
 yvekt=xvekt; % och y-led
@@ -30,8 +30,8 @@ E_in_gauss=exp(-rmat.^2/omega_in^2); % Infallande fält: Gaussiskt med plana vågf
 E_in_konstant=ones(N,N); % Infallande fält: Plan våg med normalt infall
 
 E1_gauss=E_in_gauss.*T_lins; % Fältet i Plan 1 (precis efter linsen) för gaussisk stråle 
-E1_cirkular=E_in_konstant.* ... .* ...; % Fältet i Plan 1 (precis efter linsen) för konstant fält som passerat genom cirkulär apertur *** Ej klar 
-E1=E1_cirkular; % Välj fall!
+% XXXXXXXXXXXXXXXXXXX E1_cirkular=E_in_konstant.* ... .* ...; % Fältet i Plan 1 (precis efter linsen) för konstant fält som passerat genom cirkulär apertur *** Ej klar 
+E1 = E_in_gauss; % Välj fall!
 
 I1=abs(E1).^2; % intensiteten är prop mot kvadraten på fältets amplitud (normalt struntar man i proportionalitetskonstanten)
 
@@ -57,7 +57,7 @@ axis('equal')
 pause % tryck på valfri tangent för att fortsätta
 
 %**** Och nu propagerar vi till Plan 2!
-E2=PAS(...); % Propagation med PAS-funktionen *** Ej klar
+E2=PAS(E1,L,N,a,lambda_noll,n_medium); % Propagation med PAS-funktionen *** Ej klar
 
 I2=abs(E2).^2; 
 
