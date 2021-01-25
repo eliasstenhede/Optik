@@ -6,7 +6,7 @@ full_white_value=64; % äldre matlabversion - detta värde plottas som vitt (max) 
 N=1024; % NxN är matrisstorleken (rekommenderad storlek N=1024)
 sidlaengd_Plan1=4e-3; % det samplade områdets storlek (i x- eller y-led) i Plan 1 (rekommenderad storlek 4 mm)
 a=sidlaengd_Plan1/N; % samplingsavstånd i Plan 1 (och Plan 2 eftersom vi använder PAS)
-L=100e-3; % propagationssträcka (dvs avstånd mellan Plan 1 och 2)
+L=1000e-3; % propagationssträcka (dvs avstånd mellan Plan 1 och 2)
 
 lambda_noll=633e-9; % vakuumvåglängd för rött ljus från en HeNe-laser
 n_medium=1; % brytningsindex för medium mellan Plan 1 och 2
@@ -29,9 +29,9 @@ E_in_gauss=exp(-rmat.^2/omega_in^2); % Infallande fält: Gaussiskt med plana vågf
 
 E_in_konstant=ones(N,N); % Infallande fält: Plan våg med normalt infall
 
-E1_gauss=E_in_gauss.*T_lins; % Fältet i Plan 1 (precis efter linsen) för gaussisk stråle 
-% XXXXXXXXXXXXXXXXXXX E1_cirkular=E_in_konstant.* ... .* ...; % Fältet i Plan 1 (precis efter linsen) för konstant fält som passerat genom cirkulär apertur *** Ej klar 
-E1 = E_in_gauss; % Välj fall!
+E1_in_gauss=E_in_gauss.*T_lins; % Fältet i Plan 1 (precis efter linsen) för gaussisk stråle 
+E1_cirkular=E_in_konstant.*T_apertur; % Fältet i Plan 1 (precis efter linsen) för konstant fält som passerat genom cirkulär apertur *** Ej klar 
+E1 = E1_cirkular; % Välj fall!
 
 I1=abs(E1).^2; % intensiteten är prop mot kvadraten på fältets amplitud (normalt struntar man i proportionalitetskonstanten)
 
@@ -59,7 +59,7 @@ pause % tryck på valfri tangent för att fortsätta
 %**** Och nu propagerar vi till Plan 2!
 E2=PAS(E1,L,N,a,lambda_noll,n_medium); % Propagation med PAS-funktionen *** Ej klar
 
-I2=abs(E2).^2; 
+I2=abs(E2).^2;
 
 mattnadsfaktor_plot=50; % anger hur många gånger maxvärdet ska vara mättat i plotten (>1, kan vara bra om man vill se svagare detaljer)
 figure(3)
@@ -77,3 +77,18 @@ title(['Intensitet längs x-axeln efter ' num2str(L*1e3) ' mm propagation. Verkar
 xlabel('x[mm]')
 drawnow
 
+%% uppgift 3 och 4, variera E1 för att byta uppgift
+numerisk = d_spot_numeric(I2, rmat);
+tumregel = d_spot_tumregel(lambda_noll, 2*omega_in, L);
+c = numerisk/tumregel;
+
+function d = d_spot_numeric(imat, rmat)
+    limit = max(max(imat))/exp(2);
+    index = find(imat < limit == 0,1, 'first');
+    d = 2*rmat(index);
+end
+
+function d = d_spot_tumregel(lambda, d_start, L)
+    d = lambda*L/d_start;
+end
+    
