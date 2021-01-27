@@ -18,7 +18,7 @@ yvekt=xvekt; % och y-led
 rmat=sqrt(xmat.^2+ymat.^2); % avståndet till origo i varje sampelpunkt. Observera att alla operationer är elementvisa!
 
 %******* Fält i Plan 1
-f_lins=100e-3; % fokallängd på linsen före Plan 1
+f_lins=1000e-3; % fokallängd på linsen före Plan 1
 T_lins=exp(-1i*k*rmat.^2/(2*f_lins)); % Transmissionsfunktion för en lins (linsen är TOK)
 
 D_apertur=2e-3;
@@ -31,7 +31,7 @@ E_in_konstant=ones(N,N); % Infallande fält: Plan våg med normalt infall
 
 E1_in_gauss=E_in_gauss.*T_lins; % Fältet i Plan 1 (precis efter linsen) för gaussisk stråle 
 E1_cirkular=E_in_konstant.*T_apertur; % Fältet i Plan 1 (precis efter linsen) för konstant fält som passerat genom cirkulär apertur *** Ej klar 
-E1 = E1_cirkular; % Välj fall!
+E1 = E1_cirkular.*T_lins; % Välj fall!
 
 I1=abs(E1).^2; % intensiteten är prop mot kvadraten på fältets amplitud (normalt struntar man i proportionalitetskonstanten)
 
@@ -77,20 +77,32 @@ title(['Intensitet längs x-axeln efter ' num2str(L*1e3) ' mm propagation. Verkar
 xlabel('x[mm]')
 drawnow
 
-%% uppgift 3 och 4, variera E_in för att 
+% uppgift 3, variera E1 för att byta uppgift
 numerisk = d_spot_numeric(I2, rmat);
 tumregel = d_spot_tumregel(lambda_noll, 2*omega_in, L);
 c = numerisk/tumregel;
 
+% uppgift 4, variera E1 för att byta uppgift
+
+numerisk = d_inner_ring_numeric(I2, xvekt, N)
+tumregel = d_spot_tumregel(lambda_noll, 2*omega_in, L)
+c = numerisk/tumregel
 
 function d = d_spot_numeric(imat, rmat)
-  limit = max(max(imat))/exp(2);
+    limit = max(max(imat))/exp(2);
     index = find(imat < limit == 0,1, 'first');
     d = 2*rmat(index);
 end
 
+%Denna ger fel svar, problemet ligger troligtvis i rad 102.
+function d = d_inner_ring_numeric(imat, xvekt, N)
+    indexs = islocalmin(smoothdata(imat(N/2+1,:))); %hittar alla lokala minima i grafen från figur 4
+    indexs = indexs(length(indexs)/2:length(indexs)); %kastar första halvan av arrayen (symmetrisk)
+    index = find(indexs == 1); ()
+    d = 2*xvekt(index(1));
+end
+
 function d = d_spot_tumregel(lambda, d_start, L)
-    c = 1;
-    d = c*lambda/d_start*L;
+    d = lambda*L/d_start;
 end
     
