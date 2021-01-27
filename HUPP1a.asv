@@ -84,7 +84,7 @@ c = numerisk/tumregel;
 
 % uppgift 4, variera E1 för att byta uppgift
 
-numerisk = d_inner_ring_numeric(I2, xvekt, N)
+numerisk = d_inner_ring_numeric(I2, rmat, N)
 tumregel = d_spot_tumregel(lambda_noll, 2*omega_in, L)
 c = numerisk/tumregel
 
@@ -94,12 +94,13 @@ function d = d_spot_numeric(imat, rmat)
     d = 2*rmat(index);
 end
 
-%Denna ger fel svar, problemet ligger troligtvis i rad 102.
-function d = d_inner_ring_numeric(imat, xvekt, N)
-    indexs = islocalmin(smoothdata(imat(N/2+1,:))); %hittar alla lokala minima i grafen från figur 4
-    indexs = indexs(length(indexs)/2:length(indexs)); %kastar första halvan av arrayen (symmetrisk)
-    index = find(indexs == 1); ()
-    d = 2*xvekt(index(1));
+function d = d_inner_ring_numeric(imat, rmat, N)
+    localmins = islocalmin(smoothdata(imat(N/2+1,:))); %hittar alla lokala minima i grafen från figur 4
+    localmins = localmins(length(localmins)/2:length(localmins)); %kastar första halvan av arrayen (symmetrisk)
+    index = length(localmins)/2 + find(localmins == 1); %hittar index för alla lokala minima på högra halvan av grafen
+    index = index(1)
+    d = 2*rmat(N/2+1,:);
+    d = d(index(1)); %Vi vill nu använda det första lokala minima för att hitta avståndet från origo! (ej klart)
 end
 
 function d = d_spot_tumregel(lambda, d_start, L)

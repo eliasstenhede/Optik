@@ -19,9 +19,8 @@ yvekt=xvekt; % och y-led
 rmat=sqrt(xmat.^2+ymat.^2); % avståndet till origo i varje sampelpunkt. Observera att alla operationer är elementvisa!
 
 %******* Fält i Plan 1
-f_dvl=15% fokallängd på linsen före Plan 1
+f_dvl=8e-2 % fokallängd på linsen före Plan 1
 T_dvl=exp(-1i*k*rmat.^2/(2*f_dvl)); % Transmissionsfunktion för en lins (linsen är TOK)
-T_dvl = 1
 f_eye=20e-3; % fokallängd på linsen före Plan 1
 T_eye=exp(-1i*k*rmat.^2/(2*f_eye)); % Transmissionsfunktion för en lins (linsen är TOK)
 
@@ -33,7 +32,7 @@ E2=PAS(E1,L,N,a,lambda_noll,n_medium);
 
 I2=abs(E2).^2;
 
-mattnadsfaktor_plot=max([50*f_dvl, 1]); % anger hur många gånger maxvärdet ska vara mättat i plotten (>1, kan vara bra om man vill se svagare detaljer)
+mattnadsfaktor_plot=max([1, 1]); % anger hur många gånger maxvärdet ska vara mättat i plotten (>1, kan vara bra om man vill se svagare detaljer)
 figure(3)
 image(xvekt*1e3,yvekt*1e3,I2/max(max(I2))*full_white_value*mattnadsfaktor_plot)
 title(['Intensitet efter ' num2str(L*1e3) ' mm propagation (mattnadsfaktor=' num2str(mattnadsfaktor_plot) '). Verkar OK, eller?'])
