@@ -1,0 +1,37 @@
+d = 20e-6;
+n_0 = 1.5;
+N_skiv = 100;
+lambda = 650; %, 500, 450
+thetas = linspace(0,);
+E_0 = [1;0];
+
+y = prop(thetas, N_skiv, d, n_o, lambda, E_0);
+
+plot(thetas, y)
+
+function E = prop(theta, N_skiv, d, n_o, lambda, E_0)
+    E = E_0;
+    delta = d/N_skiv;
+    for n = 1:N_skiv
+        alfa_n = pi*n/(2*N_skiv);
+        E = J_ret(alfa_n, delta, f(theta, n_o), n_o, lambda)*E;
+    end
+end
+
+function matris = J_proj(alfa)
+    matris = [cos(alfa), sin(alfa); -sin(alfa), cos(alfa)]; %eller andra hållet?
+end
+
+function matris = J_pol(alfa)
+    matris = J_proj(-alfa)*[1, 0; 0, 0]*J_proj(alfa);
+end
+
+function matris = J_ret(alfa_n, delta, n_eo, n_o, lambda)
+    phi = 2*pi/lambda*(n_eo-n_o)*delta;
+    matris = J_proj(-alfa_n)*[exp(1i*phi), 0; 0, 1]*J_proj(alfa_n);
+end
+
+function out = f(theta, n_o)
+    n_eo = 1.6;
+    out  = n_eo*n_o/norm([n_o*cos(theta), n_eo*sin(theta)]);
+end
