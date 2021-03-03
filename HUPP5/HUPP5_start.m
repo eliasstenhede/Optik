@@ -51,8 +51,8 @@ E_start=exp(-(xmat.^2+ymat.^2)/omega_in^2);
 E_start_offset = exp(-((xmat-10e-6).^2+(ymat).^2)/omega_in^2);
 E_start_ny_mod = E_start.*ymat;
 % total propagationssträcka och BPM-steg-storlek
-L=1000e-6*10;
-delta_z=lambda_noll/10;
+L=1000e-6*12;
+delta_z=lambda_noll;
 Lvekt=delta_z:delta_z:L;
 
 %E1=(E_start_ny_mod + max(max(E_start_ny_mod))*E_start/(max(max(E_start))));
@@ -74,7 +74,7 @@ for akt_L=Lvekt
     I2_laengs_yaxeln_norm=I2_laengs_yaxeln/max(I2_laengs_yaxeln);
     I_sida_norm(:,steg_nummer)=I2_laengs_yaxeln_norm;
     
-    if rem(steg_nummer,50)==0 % för att snabba på simuleringen plottas inte alla BPM-steg
+    if rem(steg_nummer,500)==0 % för att snabba på simuleringen plottas inte alla BPM-steg
         
         figure(10)
         imagesc(xvekt*1e6,yvekt*1e6,I2)
