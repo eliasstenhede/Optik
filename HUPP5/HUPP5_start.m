@@ -16,7 +16,7 @@ rmat=sqrt(xmat.^2+ymat.^2);
 % brytningsindexvariation i (x,y)-led
 n_core=1.51; % i kärnan
 n_clad=1.50; % i höljet
-D_core=3e-6;
+D_core=7e-6;
 nmat=(rmat<=D_core/2)*n_core+(rmat>D_core/2)*n_clad;
 figure(1)
 imagesc(xvekt*1e6,yvekt*1e6,nmat)
@@ -46,12 +46,13 @@ pause
 % startfält "längst till vänster"
 E_start=exp(-(xmat.^2+ymat.^2)/omega_in^2);
 E_start_offset = exp(-(xmat.^2+(ymat-1.4883e-05/3.4).^2)/omega_in^2);
+E_start_ny_mod = E_start.*ymat;
 % total propagationssträcka och BPM-steg-storlek
 L=1000e-6;
-delta_z=lambda_noll/150;
+delta_z=lambda_noll/10;
 Lvekt=delta_z:delta_z:L;
 
-E1=E_start;
+E1=(E_start_ny_mod + max(max(E_start_ny_mod))*E_start/(max(max(E_start))));
 E_sida=zeros(N,length(Lvekt));
 I_sida_norm=zeros(N,length(Lvekt));
 steg_nummer=0;
@@ -69,7 +70,7 @@ for akt_L=Lvekt
     I2_laengs_yaxeln_norm=I2_laengs_yaxeln/max(I2_laengs_yaxeln);
     I_sida_norm(:,steg_nummer)=I2_laengs_yaxeln_norm;
     
-    if rem(steg_nummer,500)==0 % för att snabba på simuleringen plottas inte alla BPM-steg
+    if rem(steg_nummer,50)==0 % för att snabba på simuleringen plottas inte alla BPM-steg
         
         figure(10)
         imagesc(xvekt*1e6,yvekt*1e6,I2)
