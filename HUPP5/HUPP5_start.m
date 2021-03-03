@@ -15,7 +15,7 @@ rmat=sqrt(xmat.^2+ymat.^2);
 
 % brytningsindexvariation i (x,y)-led
 n_core=1.51; % i kärnan
-n_clad=1.51; % i höljet
+n_clad=1.50; % i höljet
 D_core=3e-6;
 nmat=(rmat<=D_core/2)*n_core+(rmat>D_core/2)*n_clad;
 figure(1)
@@ -45,10 +45,10 @@ pause
 
 % startfält "längst till vänster"
 E_start=exp(-(xmat.^2+ymat.^2)/omega_in^2);
-
+E_start_offset = exp(-(xmat.^2+(ymat-1.4883e-05/3.4).^2)/omega_in^2);
 % total propagationssträcka och BPM-steg-storlek
 L=1000e-6;
-delta_z=2e-6;
+delta_z=lambda_noll/150;
 Lvekt=delta_z:delta_z:L;
 
 E1=E_start;
@@ -69,7 +69,7 @@ for akt_L=Lvekt
     I2_laengs_yaxeln_norm=I2_laengs_yaxeln/max(I2_laengs_yaxeln);
     I_sida_norm(:,steg_nummer)=I2_laengs_yaxeln_norm;
     
-    if steg_nummer <50 | rem(steg_nummer,5)==0 % för att snabba på simuleringen plottas inte alla BPM-steg
+    if rem(steg_nummer,500)==0 % för att snabba på simuleringen plottas inte alla BPM-steg
         
         figure(10)
         imagesc(xvekt*1e6,yvekt*1e6,I2)
@@ -98,4 +98,17 @@ for akt_L=Lvekt
     
     E1=E2;
 end
+disp("Origo: " + I2( round(length(I2)/2), round(length(I2)/2) ))
 
+function E2=BPM_steg(E1,delta_z,N,a,lambda_noll,nmat,daempmat)
+    k_noll=2*pi/lambda_noll;
+    n_PAS=mean(mean(nmat));
+    E2_PAS=PAS(E1,delta_z,N,a,lambda_noll,n_PAS);
+    faskorrektion=k_noll*delta_z*(nmat-n_PAS);
+    if max(max(abs(faskorrektion)))>(2*pi*0.02) % max tillåten faskorrektion är 2% av 2pi
+         disp('Steglängd för stor')
+         E2=0;
+    else
+        E2=E2_PAS.*exp(1i*faskorrektion).*daempmat;
+    end
+end
