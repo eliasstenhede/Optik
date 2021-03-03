@@ -2,8 +2,9 @@ close all
 clear
 
 N=256;
-sidlaengd_Plan1=30e-6;
-omega_in=4e-6;
+sidlaengd_Plan1=100e-6;
+%sidlaengd_Plan1=30e-6;
+omega_in=6e-6;
 lambda_noll=1550e-9;
 k_noll=2*pi/lambda_noll;
 a=sidlaengd_Plan1/N;
@@ -16,8 +17,9 @@ rmat=sqrt(xmat.^2+ymat.^2);
 % brytningsindexvariation i (x,y)-led
 n_core=1.51; % i kärnan
 n_clad=1.50; % i höljet
-D_core=7e-6;
-nmat=(rmat<=D_core/2)*n_core+(rmat>D_core/2)*n_clad;
+D_core=60e-6;
+%nmat=(rmat<=D_core/2)*n_core+(rmat>D_core/2)*n_clad;
+nmat = nmat_GRIN(n_core,n_clad,D_core,xmat,ymat);
 figure(1)
 imagesc(xvekt*1e6,yvekt*1e6,nmat)
 xlabel('x [µm]')
@@ -32,6 +34,7 @@ drawnow
 r_daemp_start=0.8*N/2*a; % ut till denna radie sker ingen dämpning
 kantvaerde=0.8; % värdet på daempmat vid kanten av beräkningsfönstret (längs xy-axlarna)
 daempmat=(rmat<=r_daemp_start)*1+(rmat>r_daemp_start).*(1-(1-kantvaerde)/(N/2*a-r_daemp_start)^2.*(rmat-r_daemp_start).^2);
+deampmat(rmat<D_core/2)=1;
 daempmat(daempmat<0)=0;
 figure(2)
 mesh(xvekt*1e6,yvekt*1e6,daempmat)
@@ -45,14 +48,15 @@ pause
 
 % startfält "längst till vänster"
 E_start=exp(-(xmat.^2+ymat.^2)/omega_in^2);
-E_start_offset = exp(-(xmat.^2+(ymat-1.4883e-05/3.4).^2)/omega_in^2);
+E_start_offset = exp(-((xmat-10e-6).^2+(ymat).^2)/omega_in^2);
 E_start_ny_mod = E_start.*ymat;
 % total propagationssträcka och BPM-steg-storlek
-L=1000e-6;
+L=1000e-6*10;
 delta_z=lambda_noll/10;
 Lvekt=delta_z:delta_z:L;
 
-E1=(E_start_ny_mod + max(max(E_start_ny_mod))*E_start/(max(max(E_start))));
+%E1=(E_start_ny_mod + max(max(E_start_ny_mod))*E_start/(max(max(E_start))));
+E1=E_start_offset.*exp(-1j*k_noll*sin(0.0698).*ymat);
 E_sida=zeros(N,length(Lvekt));
 I_sida_norm=zeros(N,length(Lvekt));
 steg_nummer=0;
